@@ -120,7 +120,7 @@
 /* Begin PBXNativeTarget section */
 		8D0C4E890486CD37000505A6 /* SyntheticBoldDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BEB2648F0C502FDF00746AD1 /* Build configuration list for PBXNativeTarget "SyntheticBoldDemo" */;
+			buildConfigurationList = BEA1612C0B7CDA08000D6DB0 /* Build configuration list for PBXNativeTarget "SyntheticBoldDemo" */;
 			buildPhases = (
 				8D0C4E8C0486CD37000505A6 /* Resources */,
 				8D0C4E8F0486CD37000505A6 /* Sources */,
@@ -142,10 +142,12 @@
 /* Begin PBXProject section */
 		20286C28FDCF999611CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = BEB264930C502FDF00746AD1 /* Build configuration list for PBXProject "SyntheticBoldDemo" */;
+			buildConfigurationList = BEA161280B7CDA08000D6DB0 /* Build configuration list for PBXProject "SyntheticBoldDemo" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 20286C29FDCF999611CA2CEA /* SyntheticBoldDemo */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				8D0C4E890486CD37000505A6 /* SyntheticBoldDemo */,
 			);
@@ -176,7 +178,7 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
-			shellPath = /bin/tcsh;
+			shellPath = /bin/sh;
 			shellScript = "xcodebuild installsrc SRCROOT=$DSTROOT/Developer/Examples/ATSUI/Synthetic\\ Bold\n/bin/rm -rf $DSTROOT/Developer/Examples/ATSUI/Synthetic\\ Bold/build/\n/usr/sbin/chown root:wheel $DSTROOT/Developer/Examples/ATSUI/Synthetic\\ Bold/*\n";
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -217,98 +219,102 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		BEB264900C502FDF00746AD1 /* Development */ = {
+		BEA161290B7CDA08000D6DB0 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = SyntheticBoldDemo_Prefix.pch;
-				INFOPLIST_FILE = Info.plist;
-				PREBINDING = NO;
-				PRODUCT_NAME = SyntheticBoldDemo;
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = YES;
+				ARCHS = "$(NATIVE_ARCH)";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				VALID_ARCHS = "ppc7400 ppc970 i386 ppc";
 			};
 			name = Development;
 		};
-		BEB264910C502FDF00746AD1 /* Deployment */ = {
+		BEA1612A0B7CDA08000D6DB0 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = SyntheticBoldDemo_Prefix.pch;
-				INFOPLIST_FILE = Info.plist;
-				PREBINDING = NO;
-				PRODUCT_NAME = SyntheticBoldDemo;
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = app;
-				ZERO_LINK = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				VALID_ARCHS = "ppc7400 ppc970 i386 ppc";
 			};
 			name = Deployment;
 		};
-		BEB264920C502FDF00746AD1 /* Default */ = {
+		BEA1612B0B7CDA08000D6DB0 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = SyntheticBoldDemo_Prefix.pch;
-				INFOPLIST_FILE = Info.plist;
-				PRODUCT_NAME = SyntheticBoldDemo;
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = app;
+				ARCHS = "$(NATIVE_ARCH)";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				VALID_ARCHS = "ppc7400 ppc970 i386 ppc";
 			};
 			name = Default;
 		};
-		BEB264940C502FDF00746AD1 /* Development */ = {
+		BEA1612D0B7CDA08000D6DB0 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				ARCHS = "$(NATIVE_ARCH)";
+				COPY_PHASE_STRIP = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SyntheticBoldDemo_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = $DSTROOT/Developer/Examples/ATSUI/Basics;
+				PRODUCT_NAME = SyntheticBoldDemo;
+				SKIP_INSTALL = NO;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Development;
 		};
-		BEB264950C502FDF00746AD1 /* Deployment */ = {
+		BEA1612E0B7CDA08000D6DB0 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				ARCHS = "$(NATIVE_ARCH)";
+				COPY_PHASE_STRIP = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SyntheticBoldDemo_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = $DSTROOT/Developer/Examples/ATSUI/Basics;
+				PRODUCT_NAME = SyntheticBoldDemo;
+				SKIP_INSTALL = NO;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Deployment;
 		};
-		BEB264960C502FDF00746AD1 /* Default */ = {
+		BEA1612F0B7CDA08000D6DB0 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				ARCHS = "$(NATIVE_ARCH)";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = SyntheticBoldDemo_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = $DSTROOT/Developer/Examples/ATSUI/Basics;
+				PRODUCT_NAME = SyntheticBoldDemo;
+				SKIP_INSTALL = NO;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Default;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BEB2648F0C502FDF00746AD1 /* Build configuration list for PBXNativeTarget "SyntheticBoldDemo" */ = {
+		BEA161280B7CDA08000D6DB0 /* Build configuration list for PBXProject "SyntheticBoldDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BEB264900C502FDF00746AD1 /* Development */,
-				BEB264910C502FDF00746AD1 /* Deployment */,
-				BEB264920C502FDF00746AD1 /* Default */,
+				BEA161290B7CDA08000D6DB0 /* Development */,
+				BEA1612A0B7CDA08000D6DB0 /* Deployment */,
+				BEA1612B0B7CDA08000D6DB0 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
 		};
-		BEB264930C502FDF00746AD1 /* Build configuration list for PBXProject "SyntheticBoldDemo" */ = {
+		BEA1612C0B7CDA08000D6DB0 /* Build configuration list for PBXNativeTarget "SyntheticBoldDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BEB264940C502FDF00746AD1 /* Development */,
-				BEB264950C502FDF00746AD1 /* Deployment */,
-				BEB264960C502FDF00746AD1 /* Default */,
+				BEA1612D0B7CDA08000D6DB0 /* Development */,
+				BEA1612E0B7CDA08000D6DB0 /* Deployment */,
+				BEA1612F0B7CDA08000D6DB0 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;

@@ -4,7 +4,7 @@ File: window.c
 
 Abstract: Window event handling for SyntheticBoldDemo project.
 
-Version: <1.0>
+Version: <1.1>
 
 Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
 Computer, Inc. ("Apple") in consideration of your agreement to the
@@ -44,12 +44,13 @@ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
 STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-Copyright © 2004 Apple Computer, Inc., All Rights Reserved
+Copyright © 2004-2007 Apple Inc., All Rights Reserved
 
 */ 
 
 #include "atsui.h"
 #include "window.h"
+#include "globals.h"
 
 
 // This will quit the application when the main window is closed
@@ -68,20 +69,21 @@ pascal OSStatus DoWindowClose(EventHandlerCallRef nextHandler, EventRef theEvent
 //
 pascal OSStatus DoWindowBoundsChanged(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData)
 {
-    WindowRef           theWindow;
     UInt32              eventAttributes;
-    
-    // Find out if the window was dragged or resized.  If dragged, don't do anything.  We're only interested in resize events.
-    verify_noerr( GetEventParameter(theEvent, kEventParamAttributes, typeUInt32, NULL, sizeof(typeUInt32), NULL, &eventAttributes) );
-    if ( ! (eventAttributes & kWindowBoundsChangeSizeChanged) ) {
-        return eventNotHandledErr;
-    }
+	CGContextRef		cgContext;
+	HIRect				bounds;
 
     // Get the WindowRef from the event structure
-    verify_noerr( GetEventParameter(theEvent, kEventParamDirectObject, typeWindowRef, NULL, sizeof(WindowRef), NULL, &theWindow) );
+    verify_noerr( GetEventParameter(theEvent, kEventParamCGContextRef, typeCGContextRef, NULL, sizeof(CGContextRef), NULL, &cgContext) );
 
-    // Draw the current ATSUI data using this window's GrafPort
-    DrawATSUIStuff(GetWindowPort(theWindow));
+	HIViewGetBounds(gView, &bounds);
+	
+	// Transform HIView coordinates to Quartz coordinates
+	CGContextTranslateCTM(cgContext, 0, bounds.size.height);
+	CGContextScaleCTM(cgContext, 1.0, -1.0);
+	
+    // Draw the current ATSUI data using this window's CGContext
+    DrawATSUIStuff(cgContext, bounds);
 
     return noErr;
 }

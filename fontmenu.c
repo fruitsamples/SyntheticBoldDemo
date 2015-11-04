@@ -4,7 +4,7 @@ File: fontmenu.c
 
 Abstract: Font menu support routines for SyntheticBoldDemo project.
 
-Version: <1.0>
+Version: <1.1>
 
 Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
 Computer, Inc. ("Apple") in consideration of your agreement to the
@@ -44,8 +44,7 @@ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
 STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-Copyright © 2004 Apple Computer, Inc., All Rights Reserved
-
+Copyright © 2004-2007 Apple Inc., All Rights Reserved
 */ 
 
 #include "globals.h"
@@ -136,7 +135,8 @@ FMFont SelectAndGetFont(MenuRef theMenu, MenuItemIndex theItem)
     MenuItemIndex           parentMenuItem;
     FMFontFamily            theFMFontFamily;
     FMFontStyle             theFMFontStyle;
-    FMFont                  theFont;
+	ATSFontRef				theFont = kInvalidFont;
+	CTFontRef				ctFont;
 
     // Uncheck the previous item (if any)
     if (gFontMenuCurrentMenuItem != (MenuItemIndex)-1) {
@@ -166,7 +166,11 @@ FMFont SelectAndGetFont(MenuRef theMenu, MenuItemIndex theItem)
 
     // Return the proper font
     verify_noerr( GetFontFamilyFromMenuSelection(gFontMenuCurrentMenuRef, gFontMenuCurrentMenuItem, &theFMFontFamily, &theFMFontStyle) );
-    verify_noerr( FMGetFontFromFontFamilyInstance(theFMFontFamily, theFMFontStyle, &theFont, NULL) );
+	ctFont = CTFontCreateWithQuickdrawInstance("\p", theFMFontFamily, theFMFontStyle, 0.0);
+	if (ctFont != NULL) {
+		theFont = CTFontGetPlatformFont(ctFont, NULL);
+		CFRelease(ctFont);
+	}
     return theFont;
 }
 
@@ -178,7 +182,8 @@ Boolean FindAndSelectFont(FMFont iFont)
 {
     FMFontFamily            theFMFontFamily;
     FMFontStyle             theFMFontStyle;
-    FMFont					currentFont;
+	ATSFontRef				currentFont = kInvalidFont;
+	CTFontRef				ctFont;
     ItemCount               numItems, numSubItems;
     MenuRef                 theSubMenu = NULL;
     MenuItemIndex			parentMenuItem, i, j;
@@ -197,7 +202,11 @@ Boolean FindAndSelectFont(FMFont iFont)
             numSubItems = CountMenuItems(theSubMenu);
             for (j=1; j <= numSubItems; j++) {
                 verify_noerr( GetFontFamilyFromMenuSelection(theSubMenu, j, &theFMFontFamily, &theFMFontStyle) );
-                verify_noerr( FMGetFontFromFontFamilyInstance(theFMFontFamily, theFMFontStyle, &currentFont, NULL) );
+				ctFont = CTFontCreateWithQuickdrawInstance("\p", theFMFontFamily, theFMFontStyle, 0.0);
+				if (ctFont != NULL) {
+					currentFont = CTFontGetPlatformFont(ctFont, NULL);
+					CFRelease(ctFont);
+				}
                 
                 if (currentFont == iFont) {
                     found = true;
@@ -207,7 +216,11 @@ Boolean FindAndSelectFont(FMFont iFont)
         }
         else {
             verify_noerr( GetFontFamilyFromMenuSelection(GetMenuRef(gFontMenuID), i, &theFMFontFamily, &theFMFontStyle) );
-            verify_noerr( FMGetFontFromFontFamilyInstance(theFMFontFamily, theFMFontStyle, &currentFont, NULL) );
+			ctFont = CTFontCreateWithQuickdrawInstance("\p", theFMFontFamily, theFMFontStyle, 0.0);
+			if (ctFont != NULL) {
+				currentFont = CTFontGetPlatformFont(ctFont, NULL);
+				CFRelease(ctFont);
+			}
             
             if (currentFont == iFont) {
                 found = true;

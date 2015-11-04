@@ -4,7 +4,7 @@ File: globals.c
 
 Abstract: Application globals for SyntheticBoldDemo project.
 
-Version: <1.0>
+Version: <1.1>
 
 Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
 Computer, Inc. ("Apple") in consideration of your agreement to the
@@ -44,7 +44,7 @@ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
 STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-Copyright © 2004 Apple Computer, Inc., All Rights Reserved
+Copyright © 2004-2007 Apple Inc., All Rights Reserved
 
 */ 
 
@@ -57,4 +57,5 @@ Boolean									gCurrentlyPrinting = false;
 Boolean                                 gNewCG = false;
 UInt32                                  gCurrentFontSizeCommandID = 'Z048';
 WindowRef                               gWindow;
+HIViewRef								gView;
 char                                    gDebugString[255];

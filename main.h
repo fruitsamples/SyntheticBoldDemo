@@ -4,7 +4,7 @@ File: main.h
 
 Abstract: Header for main.c in SyntheticBoldDemo project.
 
-Version: <1.0>
+Version: <1.1>
 
 Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
 Computer, Inc. ("Apple") in consideration of your agreement to the
@@ -44,7 +44,7 @@ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
 STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-Copyright © 2004 Apple Computer, Inc., All Rights Reserved
+Copyright © 2004-2007 Apple Inc., All Rights Reserved
 
 */ 
 
@@ -52,7 +52,6 @@ Copyright © 2004 Apple Computer, Inc., All Rights Reserved
 #define MY_MAIN_H
 
 int main(int argc, char* argv[]);
-void CheckAPIAvailability(void);
 OSStatus SetupMenuAndWindows(void);
 pascal OSStatus DoCommandEvent(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData);
 pascal OSStatus DoControlHitEvent(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData);

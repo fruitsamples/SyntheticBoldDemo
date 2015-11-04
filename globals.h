@@ -5,7 +5,7 @@ File: globals.h
 Abstract: Extern definitions for app globals in SyntheticBoldDemo
 project.
 
-Version: <1.0>
+Version: <1.1>
 
 Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
 Computer, Inc. ("Apple") in consideration of your agreement to the
@@ -45,7 +45,7 @@ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
 STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-Copyright © 2004 Apple Computer, Inc., All Rights Reserved
+Copyright © 2004-2007 Apple Inc., All Rights Reserved
 
 */ 
 
@@ -80,6 +80,8 @@ extern Boolean                                  gNewCG;
 extern Boolean									gCurrentlyPrinting;
 extern UInt32                                   gCurrentFontSizeCommandID;
 extern WindowRef                                gWindow;
+extern HIViewRef								gView;
+//extern CGContextRef								gContext;
 extern char                                     gDebugString[255];
 
 #endif  /* MY_GLOBALS_H */

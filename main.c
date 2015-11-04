@@ -5,7 +5,7 @@ File:m main.c
 Abstract: Main entry point and control & command event handling
 routines for SyntheticBoldDemo project.
 
-Version: <1.0>
+Version: <1.1>
 
 Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
 Computer, Inc. ("Apple") in consideration of your agreement to the
@@ -45,7 +45,7 @@ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
 STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-Copyright © 2004 Apple Computer, Inc., All Rights Reserved
+Copyright © 2004-2007 Apple Inc., All Rights Reserved
 
 */ 
 
@@ -67,18 +67,15 @@ ControlRef gUpdateButtonControl;
 //
 int main(int argc, char* argv[])
 {
-    char								startingFontName[] = "Geneva";
-    int									startingFontSize = 48;
-    ATSUFontID                          font;
-    OSStatus                            err = noErr;
+    char						startingFontName[] = "Geneva";
+    int							startingFontSize = 48;
+    ATSUFontID					font;
+    OSStatus					err = noErr;
 
     // Set up the menubar and main window
     err = SetupMenuAndWindows();
     require_noerr( err, CantDoSetup );
     
-    // Make sure we are using the right CG calls
-    CheckAPIAvailability();
-
     // Create the ATSUI data and draw it for the first time
     //
     verify_noerr( ATSUFindFontFromName(startingFontName, strlen(startingFontName), kFontFullName, kFontNoPlatform, kFontNoScript, kFontNoLanguage, &font) );
@@ -86,7 +83,7 @@ int main(int argc, char* argv[])
     SetATSUIStuffFont(font);
     SetATSUIStuffFontSize(Long2Fix(startingFontSize));
     SetUpATSUIStuff();
-    DrawATSUIStuff(GetWindowPort(gWindow));
+	HIViewSetNeedsDisplay( gView, true );
 
     // Call the event loop
     RunApplicationEventLoop();
@@ -95,42 +92,27 @@ CantDoSetup:
     return err;
 }
 
-
-// Checks to see if QDBeginCGContext / QDEndCGContext are available (vs. CreateCGContextForPort)
-// Sets global flag to indicate the result.
-//
-void CheckAPIAvailability(void)
-{
-    long response;
-
-    // These globals were already initialized to false in globals.c,
-    // so we only need to change their value in the true case.
-
-    // The QDBeginCGContext / QDEndCGContext APIs were introduced in 0x0310 (Quickdraw version from Mac OS X 10.1)
-    verify_noerr( Gestalt(gestaltQuickdrawVersion, &response) );
-    if ( (response & 0x0000FFFF) >= 0x00000310 ) gNewCG = true;
-    
-    // NOTE
-    // ----
-    // Never check the overall system version for a specific feature.  Always check the specific
-    // gestalt selector for that component.  gestaltSystemVersion is not for specific APIs.
-}
-
-
 // Creates the menu bar and window, then installs proper event handlers for them
 //
 OSStatus SetupMenuAndWindows(void)
 {
-    IBNibRef                            nibRef;
-    EventHandlerUPP                     handlerUPP;
-    EventTypeSpec                       eventType;
-    WindowRef							dialog;
-    ControlID							valueStringControID = { 'VALU', 0 };
-    ControlID							sliderControID = { 'SLID', 0 };
-    ControlID							stringInputControID = { 'TEXT', 0 };
-    ControlID							updateButtonControID = { 'UPDT', 0 };
-    OSStatus                            err;
-
+    IBNibRef					nibRef;
+    EventHandlerUPP				handlerUPP;
+    EventTypeSpec				myEvents[] =
+		{
+			{ kEventClassWindow, kEventWindowClose },
+			{ kEventClassControl, kEventControlDraw },
+			{ kEventClassCommand, kEventCommandProcess },
+			{ kEventClassControl, kEventControlHit }
+		};
+    WindowRef					dialog;
+    ControlID					valueStringControID = { 'VALU', 0 };
+    ControlID					sliderControID = { 'SLID', 0 };
+    ControlID					stringInputControID = { 'TEXT', 0 };
+    ControlID					updateButtonControID = { 'UPDT', 0 };
+	static const HIViewID		viewID = { 'awin', 0 };
+    OSStatus					err = noErr;
+	
     // Create a Nib reference passing the name of the nib file (without the .nib extension)
     // CreateNibReference only searches into the application bundle.
     err = CreateNibReference(CFSTR("main"), &nibRef);
@@ -167,30 +149,23 @@ OSStatus SetupMenuAndWindows(void)
     verify_noerr( GetControlByID(dialog, &sliderControID, &gSliderControl) );
     verify_noerr( GetControlByID(dialog, &stringInputControID, &gStringInputControl) );
     verify_noerr( GetControlByID(dialog, &updateButtonControID, &gUpdateButtonControl) );
+	HIViewFindByID(HIViewGetRoot(gWindow), viewID, &gView);
 
     // Install a handler to quit the application when the window is closed
-    eventType.eventClass = kEventClassWindow;
-    eventType.eventKind  = kEventWindowClose;
     handlerUPP = NewEventHandlerUPP(DoWindowClose);			// DoWindowClose() is defined in window.c
-    verify_noerr( InstallWindowEventHandler(gWindow, handlerUPP, 1, &eventType, NULL, NULL) );
+    verify_noerr( InstallWindowEventHandler(gWindow, handlerUPP, GetEventTypeCount(myEvents[0]), &myEvents[0], NULL, NULL) );
 
-    // Install a handler to draw the contents of the window
-    eventType.eventClass = kEventClassWindow;
-    eventType.eventKind  = kEventWindowBoundsChanged;
+	// Install a handler to update the window
     handlerUPP = NewEventHandlerUPP(DoWindowBoundsChanged);	// DoWindowBoundsChanged() is defined in window.c
-    verify_noerr( InstallWindowEventHandler(gWindow, handlerUPP, 1, &eventType, NULL, NULL) );
+    verify_noerr( HIViewInstallEventHandler(gView, handlerUPP, GetEventTypeCount(myEvents[1]), &myEvents[1], (void *)gView, NULL) );
 
     // Install a handler for command events
-    eventType.eventClass = kEventClassCommand;
-    eventType.eventKind  = kEventCommandProcess;
     handlerUPP = NewEventHandlerUPP(DoCommandEvent);		// DoCommandEvent() is defined below
-    verify_noerr( InstallApplicationEventHandler(handlerUPP, 1, &eventType, NULL, NULL) );
+    verify_noerr( InstallApplicationEventHandler(handlerUPP, GetEventTypeCount(myEvents[2]), &myEvents[2], NULL, NULL) );
     
     // Install a handler for control value change event (for slider)
-    eventType.eventClass = kEventClassControl;
-    eventType.eventKind  = kEventControlHit;
     handlerUPP = NewEventHandlerUPP(DoControlHitEvent);		// DoControlHitEvent() is defined below
-    verify_noerr( InstallApplicationEventHandler(handlerUPP, 1, &eventType, NULL, NULL) );
+    verify_noerr( InstallApplicationEventHandler(handlerUPP, GetEventTypeCount(myEvents[3]), &myEvents[3], NULL, NULL) );
 
     // Set up the global print session
     verify_noerr( InitializePrinting() );
@@ -206,13 +181,13 @@ CantGetNibRef:
 //
 pascal OSStatus DoCommandEvent(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData)
 {
-    HICommand               theCommand;
-    UInt32                  theCommandID;
-    MenuRef                 theMenu;
-    MenuItemIndex           theItem;
-    FMFont                  font;
-    OSStatus                status = eventNotHandledErr;
-    Boolean                 needsRedrawing = false;
+    HICommand					theCommand;
+    UInt32						theCommandID;
+    MenuRef						theMenu;
+    MenuItemIndex				theItem;
+    FMFont						font;
+    OSStatus					status = eventNotHandledErr;
+    Boolean						needsRedrawing = false;
 
     
     // Get the HICommand from the event structure, then get the menu reference and item out of that
@@ -221,7 +196,9 @@ pascal OSStatus DoCommandEvent(EventHandlerCallRef nextHandler, EventRef theEven
     theMenu = theCommand.menu.menuRef;
     theItem = theCommand.menu.menuItemIndex;
 
-    if ( GetMenuID(theMenu) >= kFontMenuID ) {			// Handle font menu
+    if ( GetMenuID(theMenu) >= kFontMenuID )
+	{
+		// Handle font menu
         font = SelectAndGetFont(theMenu, theItem);
         SetATSUIStuffFont(font);
         UpdateATSUIStyle();
@@ -229,9 +206,11 @@ pascal OSStatus DoCommandEvent(EventHandlerCallRef nextHandler, EventRef theEven
         needsRedrawing = true;
         status = noErr;
     }
-    else if ( (theCommandID >> 24) == 'Z' ) {			// Handle font size menu
-        UInt32      numericalBits;
-        char        string[5];
+    else if ( (theCommandID >> 24) == 'Z' )
+	{
+		// Handle font size menu
+        UInt32				numericalBits;
+        char				string[5];
         
         // The last three bytes of the CommandID are an ASCII representation of the font size
         numericalBits = theCommandID & 0x00FFFFFF;
@@ -249,19 +228,22 @@ pascal OSStatus DoCommandEvent(EventHandlerCallRef nextHandler, EventRef theEven
         needsRedrawing = true;
         status = noErr;
     }
-    else switch (theCommandID) {						// Handle other menu commands
+    else switch (theCommandID)
+	{
+		// Handle other menu commands
         case kHICommandPageSetup:
             verify_noerr( DoPageSetupDialog() );
             status = noErr;
             needsRedrawing = true;
             break;
-
         case kHICommandPrint:
             status = DoPrintDialog();
-            if ( status == noErr ) {
+            if ( status == noErr )
+			{
                 DoPrintLoop();
             }
-            else if ( status != kPMCancel ) {
+            else if ( status != kPMCancel )
+			{
                 check_string( (status == noErr), "DoPrintDialog returned an error" );
             }
             status = noErr;
@@ -270,26 +252,26 @@ pascal OSStatus DoCommandEvent(EventHandlerCallRef nextHandler, EventRef theEven
     }
 
     // Redraw if necessary
-    if (needsRedrawing) DrawATSUIStuff(GetWindowPort(gWindow));
+    if (needsRedrawing)
+		HIViewSetNeedsDisplay( gView, true );
     return status;
 }
-
 
 
 // Checks for updates to control
 //
 pascal OSStatus DoControlHitEvent(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData)
 {
-    ControlRef thisControl;
-    char buffer[256];
-    CFStringRef valueString;
-    CFStringRef	editString;
+    ControlRef					thisControl;
+    char						buffer[256];
+    CFStringRef					valueString;
+    CFStringRef					editString;
     
     // Figure out which control this came from
     verify_noerr( GetEventParameter(theEvent, kEventParamDirectObject, typeControlRef, NULL, sizeof(ControlRef), NULL, &thisControl) );
     
-    if ( thisControl == gSliderControl ) { // slider
-    
+    if ( thisControl == gSliderControl )
+	{
         // Get the value
         gStrokeThicknessFactor = GetControl32BitValue(thisControl) / 1000.0;
     
@@ -298,21 +280,22 @@ pascal OSStatus DoControlHitEvent(EventHandlerCallRef nextHandler, EventRef theE
         valueString = CFStringCreateWithCString(NULL, buffer, kCFStringEncodingASCII);
         verify_noerr( SetControlData(gValueStringControl, 0, kControlStaticTextCFStringTag, sizeof(CFStringRef), &valueString) );
         CFRelease(valueString);
-        DrawOneControl(gValueStringControl);
-    
+ 		HIViewSetNeedsDisplay( gValueStringControl, true );
+   
         // Update the display
-        DrawATSUIStuff(GetWindowPort(gWindow));
+		HIViewSetNeedsDisplay( gView, true );
         
         return noErr;
     }
-    else if ( thisControl == gUpdateButtonControl ) { // "Update!" button
+    else if ( thisControl == gUpdateButtonControl )
+	{
         // Get the string from the user
         verify_noerr( GetControlData(gStringInputControl, 0, kControlEditTextCFStringTag, sizeof(CFStringRef), (void *)&editString, NULL) );
         UpdateATSUIStuffString(editString);
         CFRelease(editString);
 
         // Update the display
-        DrawATSUIStuff(GetWindowPort(gWindow));
+		HIViewSetNeedsDisplay( gView, true );
 
         return noErr;
     }
